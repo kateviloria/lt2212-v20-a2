@@ -148,13 +148,23 @@ def extract_features(samples):
     row_index = 0
     
     for every_article in word_freq:
+        for every_word in every_article.keys():
+            word_index = master_list.index(every_word) # get index from master_list
+            word_count = every_article[every_word] # get word count from dictionary
+            final_array[row_index, word_index] = word_count
+        row_index += 1
+
+    """
+    OLD - TRYING NEW ABOVE
+    for every_article in word_freq:
         for every_word in master_list:
             if every_word in every_article.keys():
                 word_index = master_list.index(every_word) # get index from master_list
                 word_count = every_article[every_word] # get word count from dictionary
                 final_array[row_index, word_index] = word_count
         row_index += 1
-    
+    """
+
     print('final_array done')
     # print(final_array)
    
