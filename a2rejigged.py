@@ -83,7 +83,6 @@ def tokenize_text(data):
 
 #print(tokenize_text(fetch_20newsgroups))
 
-
 def count_freq(data):
     """
     Count occurrence of each word within each document.
@@ -98,23 +97,14 @@ def count_freq(data):
 
     """
 
-    words_to_count = tokenize_text(data)[0]
-    master_list = tokenize_text(data)[1]
-
-    """
-    Is above different from
-
-    tokenized_returns = tokenize_text(data)
-    words_to_count = tokenized_returns[0]
-    master_list = tokenized_returns[1]
-    """
+    words_to_count, master_list = tokenize_text(data)
 
     # list of dictionaries for word counts
     word_freq = []
     for every_file in words_to_count:
         article_dict = {} # word count for each article
         for every_word in every_file:
-            if every_ord in article_dict.keys():
+            if every_word in article_dict.keys():
                 article_dict[every_word] += 1
             else:
                 article_dict[every_word] = 1
@@ -141,10 +131,8 @@ def extract_features(samples):
     #word_freq = count_freq(samples) # word counts
     # master_list = tokenize_text(samples)[1]
 
-    master_list = count_freq(samples)[1]
-    print('master_list done')
-    word_freq = count_freq(samples)[0] # word counts
-    print('word_freq done')
+    word_freq, master_list = count_freq(samples)
+    print('master_list, word_freq done')
     
     # number of rows -> docs
     doc_rows = len(word_freq)
