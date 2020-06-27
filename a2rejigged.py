@@ -9,13 +9,18 @@ random.seed(42)
 from sklearn.feature_extraction.text import TfidfTransformer
 from nltk.corpus import stopwords
 import string
+import collections
 from sklearn.decomposition import TruncatedSVD
 from sklearn.model_selection import ShuffleSplit
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-from sklearn.metrics import classification_report
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
+
+# from sklearn.metrics import classification_report --> Used at first, excessive info
 
 
 ###### PART 1
@@ -56,33 +61,56 @@ def tokenize_text(data):
     # tokenize data 
     # data_text = baby_data
     text_list = [] # should be list of lists, each inner list is text of a file
+    master_list = [] # list of words -> columns for array (will need for indexing)
     for each_file in data: # CHANGE TO BABY_DATA for trial; NEWS_DATA for 
         word_list = []
         # make string into list
         string_to_list = each_file.split()
         for every_word in string_to_list:
-            # take out punctuwation
-            no_punct = every_word.translate(str.maketrans('','', string.punctuation))
-            if no_punct.isalpha(): # filters out integers and punctuation
-                no_capitals = no_punct.lower() # makes each word into lowercase
+            # take out punctuation
+            #no_punct = every_word.translate(str.maketrans('','', string.punctuation))
+            # if no_punct.isalpha(): # filters out integers and punctuation
+            if every_word.isalpha(): # filters out integers and punctuation
+                no_capitals = every_word.lower() # makes each word into lowercase
                 if no_capitals not in stop_words: # filters through NLTK stop words list
                     word_list.append(no_capitals)
+                    if no_capitals not in master_list:
+                        master_list.append(no_capitals)
         text_list.append(word_list)
-    
+    """
+    INTEGRATED TO ABOVE FUNCTION
     # make list of all possible words
     master_list = [] 
     for every_file in text_list:
         for every_word in every_file:
             if every_word not in master_list:
                 master_list.append(every_word)
-    master_list.sort() # alphabetise master_list
+    master_list.sort() # alphabetise master_list <- probably dont need to sort
+    """
+    # count freq
+    word_freq = []
+    """
+    for every_file in text_list:
+        article_dict = {} # word count for each article
+        for every_word in every_file:
+            if every_word in article_dict.keys():
+                article_dict[every_word] += 1
+            else:
+                article_dict[every_word] = 1
+        word_freq.append(article_dict)
+    """
+    for every_file in text_list:
+        article_dict = {}
+        article_dict = collections.Counter(every_file)
+        word_freq.append(article_dict)
 
-    return text_list, master_list
+    return word_freq, master_list
 
 #print(tokenize_text(fetch_20newsgroups))
-
+"""
+integrated to above function
 def count_freq(data):
-    """
+    
     Count occurrence of each word within each document.
 
     Args:
@@ -93,7 +121,7 @@ def count_freq(data):
         word in the document and its value is the frequency.
         [ { word : 4, another_word : 2, a_word : 0}, { word : 0, a_diff_word : 1, what_word : 1}]
 
-    """
+    
 
     words_to_count, master_list = tokenize_text(data)
 
@@ -109,7 +137,7 @@ def count_freq(data):
         word_freq.append(article_dict)
 
     return  word_freq, master_list
-
+"""
 
 def extract_features(samples):
     """
@@ -129,7 +157,7 @@ def extract_features(samples):
     #word_freq = count_freq(samples) # word counts
     # master_list = tokenize_text(samples)[1]
 
-    word_freq, master_list = count_freq(samples)
+    word_freq, master_list = tokenize_text(samples)
     print('master_list, word_freq done')
     
     # number of rows -> docs
@@ -270,13 +298,20 @@ def train_classifer(clf, X, y):
 
 def evalute_classifier(clf, X, y):
     assert is_classifier(clf)
+    # y is y_true
     predicted = clf.predict(X)
     accuracy = accuracy_score(y, predicted)
+    precision = precision_score(y, predicted, average='weighted')
+    recall = recall_score(y, predicted, average='weighted')
+    f1 =  f1_score(y, predicted, average='weighted')
     # calculates precision, recall, F-measure, support (extra)
-    class_report = classification_report(y, clf.predict(X))
+    # class_report = classification_report(y, clf.predict(X))
+    # print(class_report)
     print('Accuracy: ', accuracy)
-    print(class_report)
-
+    print('Precision: ', precision)
+    print('Recall: ', recall)
+    print('F-measure: ', f1)
+    
 
 ######
 #DONT CHANGE THIS FUNCTION
