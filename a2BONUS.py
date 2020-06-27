@@ -178,7 +178,7 @@ def reduce_dim(X,n=10):
     
     # reduce dimension using Principal Component Analysis (PCA)
     pc_analysis = PCA(n_components=n)
-    pca_array = pca.fit_transform(X)
+    pca_array = pc_analysis.fit_transform(X)
 
     return pca_array
 
