@@ -6,7 +6,6 @@ import numpy as np
 random.seed(42)
 
 # My Own Imports
-# from sklearn.feature_extraction.text import CountVectorizer DONT NEED ANYMORE
 from sklearn.feature_extraction.text import TfidfTransformer
 from nltk.corpus import stopwords
 import string
@@ -46,8 +45,7 @@ def tokenize_text(data):
         An alphabetized list of all the words that appear in the data. Words only appear once.
     """
 
-    # newsgroups_all = data(subset='all')
-
+    # from NLTK : words that search engines have been programmed to ignore (ie. pronouns, 'during', 'very')
     stop_words = stopwords.words('english')
 
     # news_data = newsgroups_all.data
@@ -165,18 +163,14 @@ def extract_features(samples):
     # print(shape_of_vec)
 
      # reduced by total word counts per column
-    # SAGAS WAY
     array_column_sum = np.sum(final_array, axis = 0) # sum of each word in all of document
-    array_filter = array_column_sum > 20 # filtered will only have words that are appear more than 20 times within entire data set
+
+    # filtered will only have words that are appear more than 20 times within entire data set
+    array_filter = array_column_sum > 20 
     print('about to filter final array')
-    filtered_array = final_array[:, array_filter]
-    
-    # KATES
-    #column_sum = final_array.sum(0) 
-    # eliminate columns that do not have a total that is greater or equal to 5
-    # get rid of words that don't appear at least 5 times in the data
-    #reduced_array = final_array[:, column_sum >= 20] # [ROW, COLUMN]
-    # shape_reduced = reduced_array.shape
+    filtered_array = final_array[:, array_filter] # [ROW, COLUMN]
+    # shape_filtered = filtered_array.shape
+ 
 
     # consider words that appear in all documents (ie. subject)
         # tfidf = TfidfTransformer(smooth_idf=True, use_idf=True)
