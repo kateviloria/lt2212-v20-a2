@@ -11,6 +11,7 @@ from nltk.corpus import stopwords
 import string
 import collections
 from sklearn.decomposition import TruncatedSVD
+from sklearn.decomposition import PCA
 from sklearn.model_selection import ShuffleSplit
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -178,7 +179,7 @@ def reduce_dim(X,n=10):
     # reduce dimension using Principal Component Analysis (PCA)
     pc_analysis = PCA(n_components=n)
     pca_array = pca.fit_transform(X)
-    
+
     return pca_array
 
 
