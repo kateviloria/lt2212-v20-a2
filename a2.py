@@ -6,7 +6,6 @@ import numpy as np
 random.seed(42)
 
 # My Own Imports
-# from sklearn.feature_extraction.text import CountVectorizer DONT NEED ANYMORE
 from sklearn.feature_extraction.text import TfidfTransformer
 from nltk.corpus import stopwords
 import string
@@ -46,24 +45,23 @@ def tokenize_text(data):
         An alphabetized list of all the words that appear in the data. Words only appear once.
     """
 
-    # newsgroups_all = data(subset='all')
-
+    # from NLTK : words that search engines have been programmed to ignore (ie. pronouns, 'during', 'very')
     stop_words = stopwords.words('english')
 
-    # news_data = newsgroups_all.data
 
-    # CHANGE BABY DATA FUNCTIONS!!!!
+    # FOR TESTING IN SMALL SAMPLE
+    # news_data = newsgroups_all.data
     # baby_data = news_data[:21]
-   
-    # tokenize data 
     # data_text = baby_data
+
+    # tokenize data 
     text_list = [] # should be list of lists, each inner list is text of a file
-    for each_file in data: # CHANGE TO BABY_DATA for trial; NEWS_DATA for 
+    for each_file in data: # CHANGE TO data_text for trial; data for ALL
         word_list = []
         # make string into list
         string_to_list = each_file.split()
         for every_word in string_to_list:
-            # take out punctuwation
+            # take out punctuation
             no_punct = every_word.translate(str.maketrans('','', string.punctuation))
             if no_punct.isalpha(): # filters out integers and punctuation
                 no_capitals = no_punct.lower() # makes each word into lowercase
@@ -81,8 +79,6 @@ def tokenize_text(data):
 
     return text_list, master_list
 
-#print(tokenize_text(fetch_20newsgroups))
-
 
 def count_freq(data):
     """
@@ -95,10 +91,9 @@ def count_freq(data):
         A list of dictionaries. Each dictionary represents a document. Within each dictionary, the key is the
         word in the document and its value is the frequency.
         [ { word : 4, another_word : 2, a_word : 0}, { word : 0, a_diff_word : 1, what_word : 1}]
-
     """
 
-    words_to_count = tokenize_text(data)[0]
+    words_to_count, master_list = tokenize_text(data)
 
     # list of dictionaries for word counts
     word_freq = []
@@ -111,7 +106,7 @@ def count_freq(data):
                 article_dict[every_word] = 1
         word_freq.append(article_dict)
 
-    return  word_freq
+    return  word_freq, master_list
 
 
 def extract_features(samples):
@@ -129,17 +124,21 @@ def extract_features(samples):
 
     print("Extracting features ...")
 
-    word_freq = count_freq(samples) # word counts
-    master_list = tokenize_text(samples)[1]
+    # calls count_freq to get dictionary of lists and list of all words
+    word_freq, master_list = count_freq(samples)
+    print('master_list, word_freq done')
     
     # number of rows -> docs
     doc_rows = len(word_freq)
+    print('have doc_rows')
 
     # number of columns -> words in entire lexicon
     word_columns = len(master_list)
+    print('have word_columns')
     
     # make array with 0's for all the words that doesn't appear in doc
     final_array = np.zeros((doc_rows, word_columns))
+    print('initial final array w all zeroes done')
 
     # to move to next doc
     row_index = 0
@@ -152,30 +151,29 @@ def extract_features(samples):
                 final_array[row_index, word_index] = word_count
         row_index += 1
     
-    print(final_array)
+    print('final_array done')
+    # print(final_array)
    
-    # to check shape of vec
+    # CHECK SHAPE OF VEC
     # shape_of_vec = final_array.shape
     # print(shape_of_vec)
 
-     # reduced by total word counts per column
-    column_sum = final_array.sum(0) 
-    # eliminate columns that do not have a total that is greater or equal to 5
-    # get rid of words that don't appear at least 5 times in the data
-    reduced_array = final_array[:, column_sum >= 20] # [ROW, COLUMN]
-    # shape_reduced = reduced_array.shape
-
+    # reduced by total word counts per column
+    array_column_sum = np.sum(final_array, axis = 0) # sum of each word (columns) in all of document 
+    array_filter = array_column_sum > 20 # filtered will only have words that appear more than 20 times within entire data set
+    print('about to filter final array')
+    filtered_array = final_array[:, array_filter]
+    
     # consider words that appear in all documents (ie. subject)
         # tfidf = TfidfTransformer(smooth_idf=True, use_idf=True)
         # tfidf_array = tfidf.fit_transform(reduced_array)
         # shape_tfidf = tfidf_array.shape
         # print(shape_tfidf)
         # SEEMED TO NOT RETURN AN ARRAY ACCORDING TO ASSERT FUNCTION
-        
+
     print('Done extracting features')
     
-    return reduced_array
-
+    return filtered_array
 
 
 ##### PART 2
@@ -213,6 +211,7 @@ def get_classifier(clf_id):
     assert is_classifier(clf)
     print("Getting clf {} ...".format(clf.__class__.__name__))
     return clf
+
 
 #DONT CHANGE THIS FUNCTION
 def part3(X, y, clf_id):
