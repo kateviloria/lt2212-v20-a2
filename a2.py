@@ -89,7 +89,8 @@ def tokenize_text(data):
 
 def extract_features(samples):
     """
-    Takes tokenized text and creates a numpy array.
+    Takes tokenized text and creates a numpy array. 
+    Filters out words (deletes columns within the array) that appear less than 20 times in the data.
 
     Args:
         samples - 20 newsgroup data
