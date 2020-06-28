@@ -91,5 +91,3 @@ For Decision Tree:
 
 To compare (Truncated SVD vs PCA):
     It makes sense that the effects of both Truncated SVD and PCA to both classifiers are similar. While SVD is able to analyse the data into independent components, PCA does the same and disregards less significant components. Since I used Truncated SVD, it is basically doing what PCA was meant to do--truncating the less important basis vectors from the original SVD matrix. 
-
-
