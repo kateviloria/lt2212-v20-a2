@@ -2,7 +2,7 @@
 
 Put any documentation here including any answers to the questions in the assignment on Canvas.
 
-__Part 1 - creating the feature table__
+__Part 1 - creating the feature table__  
 Tokenized the text by:  
     - turning text file into a list of strings (each word is a string)   
     - filtering out all integers and punctuation  
@@ -28,7 +28,7 @@ __Part 3 - classify and evaluate__
 Model 1 - K Nearest Neighbors Classifier  
 Model 2 - Decision Tree Classifier  
 
-__Part 4 - try and discuss__
+__Part 4 - try and discuss__  
 *Unreduced*  
 (9718 dimensions)
 |               | Accuracy | Precision | Recall | F-measure |
